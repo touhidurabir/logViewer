@@ -56,7 +56,11 @@ pkp-plugin release logViewer --newversion 1.0.0.0
 
 It clones the repository fresh, runs `composer install` because there is a `composer.json`, removes `.git`
 and everything listed in `exclusions.txt`, and builds `logViewer-vX.tar.gz` with its MD5 — which is what the
-plugin gallery entry needs. Installing that file through Administration › Plugins › Upload works on a host
+plugin gallery entry needs. Paths in `exclusions.txt` are written with the `logViewer/` prefix, as the tool
+expects; it lists only this repository's own files, so `lib/vendor` in the package is exactly what
+`composer install` produced and can be compared against it. Installing that file through
+Administration › Plugins › Upload works on a host with no shell access, because nothing runs Composer at
+install time. Installing that file through Administration › Plugins › Upload works on a host
 with no shell access, because nothing runs Composer at install time.
 
 ## Configuration
