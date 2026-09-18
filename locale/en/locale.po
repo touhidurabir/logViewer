@@ -1,0 +1,216 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-17T00:00:00+00:00\n"
+"PO-Revision-Date: 2026-09-17T00:00:00+00:00\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "plugins.generic.logViewer.displayName"
+msgstr "Log Viewer"
+
+msgid "plugins.generic.logViewer.description"
+msgstr "Writes application logs and uncaught errors to configurable log files, and lets site administrators browse, search, download and delete logs from the browser, without shell access to the server."
+
+msgid "plugins.generic.logViewer.description.unsupported"
+msgstr "This version of the application already includes application logging, so this plugin cannot be enabled. Configure logging in the [logs] section of config.inc.php instead. Its settings action hands over the settings it was using, written for that section."
+
+msgid "plugins.generic.logViewer.pageTitle"
+msgstr "Log Viewer"
+
+msgid "plugins.generic.logViewer.admin.title"
+msgstr "Logs"
+
+msgid "plugins.generic.logViewer.admin.description"
+msgstr "Browse and search the application, PHP error, scheduled task and usage statistics logs."
+
+msgid "plugins.generic.logViewer.admin.view"
+msgstr "View Logs"
+
+msgid "plugins.generic.logViewer.siteAdminRequired"
+msgstr "Only site administrators can view the logs."
+
+msgid "plugins.generic.logViewer.settings.description"
+msgstr "Application logs are written to {$logDirectory}. Settings made in the [logs] section of config.inc.php take precedence over these and are shown read-only. Changes apply from the next request. While the site runs in sandbox mode, or email is sent to the log, each message is written to the log destination chosen here and can be read in the viewer, rather than going to the PHP error log."
+
+msgid "plugins.generic.logViewer.settings.overridden"
+msgstr "Set by {$key_name} in config.inc.php."
+
+msgid "plugins.generic.logViewer.settings.logChannel"
+msgstr "Log destination"
+
+msgid "plugins.generic.logViewer.settings.logChannel.description"
+msgstr "Where log entries are written."
+
+msgid "plugins.generic.logViewer.settings.logChannel.invalid"
+msgstr "Please choose a valid log destination."
+
+msgid "plugins.generic.logViewer.settings.channel.daily"
+msgstr "Daily log files (daily)"
+
+msgid "plugins.generic.logViewer.settings.channel.single"
+msgstr "A single log file (single)"
+
+msgid "plugins.generic.logViewer.settings.channel.stack"
+msgstr "Several destinations (stack)"
+
+msgid "plugins.generic.logViewer.settings.channel.errorlog"
+msgstr "PHP error log (errorlog)"
+
+msgid "plugins.generic.logViewer.settings.channel.syslog"
+msgstr "System log (syslog)"
+
+msgid "plugins.generic.logViewer.settings.channel.stderr"
+msgstr "Standard error (stderr)"
+
+msgid "plugins.generic.logViewer.settings.channel.null"
+msgstr "Discard all log entries (null)"
+
+msgid "plugins.generic.logViewer.settings.logStacks"
+msgstr "Destinations for \"Several destinations\""
+
+msgid "plugins.generic.logViewer.settings.logStacks.description"
+msgstr "Only used when the log destination is \"Several destinations\"."
+
+msgid "plugins.generic.logViewer.settings.logStacks.invalid"
+msgstr "Please choose only valid destinations."
+
+msgid "plugins.generic.logViewer.settings.logStacks.required"
+msgstr "Please choose at least one destination for \"Several destinations\"."
+
+msgid "plugins.generic.logViewer.settings.logDailyDays"
+msgstr "Days of daily log files to keep"
+
+msgid "plugins.generic.logViewer.settings.logDailyDays.description"
+msgstr "Older daily log files are deleted. Use 0 to keep them all."
+
+msgid "plugins.generic.logViewer.settings.logDailyDays.invalid"
+msgstr "Please enter a whole number of days."
+
+msgid "plugins.generic.logViewer.settings.logFormatter"
+msgstr "Log format"
+
+msgid "plugins.generic.logViewer.settings.logFormatter.description"
+msgstr "Applies to daily and single log files, standard error and the system log."
+
+msgid "plugins.generic.logViewer.settings.logFormatter.invalid"
+msgstr "Please choose a valid log format."
+
+msgid "plugins.generic.logViewer.settings.logFormatter.line"
+msgstr "Human-readable lines"
+
+msgid "plugins.generic.logViewer.settings.logFormatter.json"
+msgstr "JSON, one record per line"
+
+msgid "plugins.generic.logViewer.settings.logClientErrors"
+msgstr "Failed requests"
+
+msgid "plugins.generic.logViewer.settings.logClientErrors.label"
+msgstr "Also log requests that failed because of the caller"
+
+msgid "plugins.generic.logViewer.settings.logClientErrors.description"
+msgstr "A request for a page that does not exist, or one that was refused, is a failure the caller caused, not a fault in the site. Each one recorded costs a log entry with a full stack trace, and on a public site most of them come from robots and mistyped addresses. Leave this off unless you are looking into a routing or permission problem. Errors in the application itself are always logged."
+
+msgid "plugins.generic.logViewer.settings.configBlock"
+msgstr "These settings for config.inc.php"
+
+msgid "plugins.generic.logViewer.settings.configBlock.description"
+msgstr "The same settings written as a [logs] section. Version 3.6 reads this section itself, so pasting it into config.inc.php before upgrading keeps logging as it is now; this plugin then has nothing left to do. A line that is commented out is at its default value. Click the box to select it all."
+
+msgid "plugins.generic.logViewer.upgrade.description"
+msgstr "This version of the application handles logging itself, so this plugin no longer applies its settings. Below are the settings it was using, written as a [logs] section for config.inc.php. Paste it in to keep logging as it was, then remove the plugin. A line that is commented out is at its default value."
+
+msgid "plugins.generic.logViewer.sources"
+msgstr "Logs shown in the viewer"
+
+msgid "plugins.generic.logViewer.sources.description"
+msgstr "The application log is always shown. Choose which other logs to show. A path may be a single file or a pattern such as /var/log/nginx/*.log, and must be readable by the web server. Paths set in the [logs] section of config.inc.php take precedence and are shown read-only."
+
+msgid "plugins.generic.logViewer.sources.show"
+msgstr "Show in the viewer"
+
+msgid "plugins.generic.logViewer.sources.path"
+msgstr "Path"
+
+msgid "plugins.generic.logViewer.sources.detected"
+msgstr "Suggested automatically. Save the settings to use it."
+
+msgid "plugins.generic.logViewer.sources.invalid"
+msgstr "{$source}: {$status}"
+
+msgid "plugins.generic.logViewer.sources.phpErrorLog"
+msgstr "PHP error log"
+
+msgid "plugins.generic.logViewer.sources.phpErrorLog.description"
+msgstr "Errors, warnings and error_log() messages written by PHP. Left empty, PHP's own error_log setting is used."
+
+msgid "plugins.generic.logViewer.sources.scheduledTaskLogs"
+msgstr "Scheduled task logs"
+
+msgid "plugins.generic.logViewer.sources.scheduledTaskLogs.description"
+msgstr "One file per scheduled task run, kept in the scheduledTaskLogs directory of the files directory."
+
+msgid "plugins.generic.logViewer.sources.usageStatsLogs"
+msgstr "Usage statistics logs"
+
+msgid "plugins.generic.logViewer.sources.usageStatsLogs.description"
+msgstr "Usage events waiting to be counted. They can be read and downloaded, but not deleted: deleting them would lose those statistics."
+
+msgid "plugins.generic.logViewer.sources.apacheErrorLog"
+msgstr "Apache error log"
+
+msgid "plugins.generic.logViewer.sources.apacheErrorLog.description"
+msgstr "For example /var/log/apache2/error.log, or /var/log/httpd/error_log."
+
+msgid "plugins.generic.logViewer.sources.nginxErrorLog"
+msgstr "Nginx error log"
+
+msgid "plugins.generic.logViewer.sources.nginxErrorLog.description"
+msgstr "For example /var/log/nginx/error.log."
+
+msgid "plugins.generic.logViewer.sources.httpAccessLog"
+msgstr "Web server access log"
+
+msgid "plugins.generic.logViewer.sources.httpAccessLog.description"
+msgstr "An Apache or Nginx access log in the common or combined format, for example /var/log/nginx/access.log."
+
+msgid "plugins.generic.logViewer.sources.databaseLog.mysql"
+msgstr "MySQL or MariaDB error log"
+
+msgid "plugins.generic.logViewer.sources.databaseLog.postgres"
+msgstr "PostgreSQL log"
+
+msgid "plugins.generic.logViewer.sources.databaseLog.description"
+msgstr "The database server's own log. It can only be shown when the database server runs on the same machine as the web server."
+
+msgid "plugins.generic.logViewer.sources.supervisorLog"
+msgstr "Supervisor log"
+
+msgid "plugins.generic.logViewer.sources.supervisorLog.description"
+msgstr "Supervisor's own log, for example /var/log/supervisor/supervisord.log. Useful when job workers run under Supervisor."
+
+msgid "plugins.generic.logViewer.sources.status.found"
+msgstr "Found: {$files} file(s), {$size} in total."
+
+msgid "plugins.generic.logViewer.sources.status.empty"
+msgstr "No path set."
+
+msgid "plugins.generic.logViewer.sources.status.relative"
+msgstr "Enter an absolute path, starting with /."
+
+msgid "plugins.generic.logViewer.sources.status.missing"
+msgstr "Not found. Check the path, and that the web server can enter its directory."
+
+msgid "plugins.generic.logViewer.sources.status.notFile"
+msgstr "Not a file. Enter the path of a log file, or a pattern such as /var/log/nginx/*.log."
+
+msgid "plugins.generic.logViewer.sources.status.unreadable"
+msgstr "Found, but the web server is not allowed to read it."
+
+msgid "plugins.generic.logViewer.sources.status.noFilesYet"
+msgstr "No log files yet."

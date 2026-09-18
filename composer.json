@@ -1,0 +1,17 @@
+{
+	"license": "GPL-3.0-or-later",
+	"require": {
+		"opcodesio/log-viewer": "~3.24.2"
+	},
+	"replace": {
+		"illuminate/contracts": "*"
+	},
+	"config": {
+		"vendor-dir": "lib/vendor",
+		"platform": {
+			"php": "8.2.0"
+		},
+		"platform-check": false,
+		"optimize-autoloader": true
+	}
+}
