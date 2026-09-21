@@ -1,0 +1,2 @@
+logViewer/exclusions.txt
+logViewer/.gitignore
