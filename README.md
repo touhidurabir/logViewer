@@ -1,73 +1,71 @@
-# logViewer
+# Log Viewer
 
-Application logging and a web log viewer for OJS, OMP and OPS **3.5**, as a generic plugin with no
-changes to the application. Every 3.5.0 point release is supported: the plugin uses nothing that was
-added to `lib/pkp` after 3.5.0-0.
+Application logging and a log page for OJS, OMP and OPS 3.5 — for site administrators who need to
+read the site's logs without a shell on the server.
 
-It backports two pieces of 3.6 work:
+On 3.5 an uncaught error reaches PHP's error log and nowhere else. This plugin sets up Laravel's log
+channels, reports errors into them, and adds a page that reads them back.
 
-- **Logging** ([pkp/pkp-lib#12841](https://github.com/pkp/pkp-lib/issues/12841)): Laravel log channels
-  writing to `{files_dir}/logs/`, with uncaught errors reported into them.
-- **Log viewer** ([pkp/pkp-lib#12237](https://github.com/pkp/pkp-lib/issues/12237)): the
-  [opcodesio/log-viewer](https://github.com/opcodesio/log-viewer) UI for site administrators at
-  `index.php/index/admin/log-viewer`.
+## Features
 
-The plugin refuses to be enabled on releases that ship logging in core (3.6 and later). Configure
-`[logs]` in `config.inc.php` there instead — and before upgrading, copy the ready-made `[logs]` section
-the settings form shows at the bottom, which is these settings written for that file. After the upgrade
-the plugin's **Settings** action still hands it over, so nothing is lost if the copy was forgotten.
+- **Errors are recorded** — uncaught errors, failed queue jobs and API exceptions, in
+  `{files_dir}/logs/app-YYYY-MM-DD.log` by default. The destination is a setting: daily files, a
+  single file, PHP's error log, syslog, stderr, several of these at once, or nothing.
+- **A log page** at Administration → Logs, where logs can be read, searched, filtered by level,
+  downloaded and deleted.
+- **Other logs too** — PHP's error log, scheduled task logs, usage statistics logs, the Apache or
+  Nginx error log, a web server access log, the MySQL/MariaDB or PostgreSQL log, and Supervisor's
+  log. Each one is switched on in the settings, and each is read with the parser for that kind of
+  log.
+- **Emails are previewed** when mail is sent to the log (`[general] sandbox = On` or
+  `[email] default = log`). Their HTML is cleaned with `[security] allowed_html` first, so nothing
+  in an email runs in the viewer.
+- **Site administrators only.** Logged-out visitors are sent to the login page and everyone else
+  gets 403. Anything that changes state needs the page's CSRF token, download links are signed and
+  expire, and only the application and scheduled task logs can be deleted — the rest belong to the
+  server, or hold events not yet counted.
+- **Settings that survive the upgrade to 3.6**, which has this in core: the same `[logs]` keys, and
+  a ready-made `[logs]` section at the bottom of the settings form to paste into `config.inc.php`.
 
-## What it does
+## Requirements
 
-- Sets up the `daily`, `single`, `stack`, `errorlog`, `syslog`, `stderr` and `null` channels, with the
-  same names and meaning as 3.6. The default is daily files, `{files_dir}/logs/app-YYYY-MM-DD.log`.
-- Reports uncaught errors, queue job failures and API exceptions to the configured channel. Without the
-  plugin, 3.5 sends these only to PHP's error log. Failures the caller caused, such as 404s, are left
-  out unless the settings ask for them (see below).
-- Adds a **Logs** panel to Administration that opens the viewer, where logs can be searched, downloaded
-  and deleted. Besides the application log it can show PHP's error log, scheduled task logs, usage
-  statistics logs, the Apache and Nginx error logs, a web server access log, the MySQL/MariaDB or
-  PostgreSQL log, and Supervisor's log. Which ones is chosen in the settings.
+- OJS, OMP or OPS 3.5.0, any point release
+- PHP 8.2 or later
+- `{files_dir}` writable by the web server
+
+On 3.6 and later, core does the logging and the plugin refuses to be enabled. Its **Settings**
+action still hands over the `[logs]` section there, so nothing is lost if it was not copied before
+the upgrade.
 
 ## Installation
 
-Copy the plugin to `plugins/generic/logViewer` and enable it:
+Download the packaged plugin from the releases and upload it from the Plugins page, or install it
+from the plugin gallery once it is listed there. The package carries its dependencies, so the
+server needs no Composer step.
 
-- **Several journals/presses/servers:** Administration › Site Settings › Plugins.
-- **A single journal/press/server:** Settings › Website › Plugins, in that journal. It is listed there
-  because 3.5 hides the site plugin list on single-context installs, but only a site administrator can
-  enable it or change its settings.
-
-`{files_dir}` must be writable by the web server.
-
-The release package contains the plugin's dependencies in `lib/vendor`, so installing from it needs no
-Composer step. They are **not** in the git repository: after cloning, run `composer install` in the plugin
-directory, which puts them in `lib/vendor` as `composer.json` says.
-
-### Building a release
-
-With [pkp-plugin-cli](https://www.npmjs.com/package/pkp-plugin-cli), the tool PKP's own plugins are released
-with:
+To install from a git checkout instead, clone it into `plugins/generic/logViewer` and run:
 
 ```bash
-npm install -g pkp-plugin-cli
-pkp-plugin release logViewer --newversion 1.0.0.0
+composer install --working-dir=plugins/generic/logViewer
+php lib/pkp/tools/installPluginVersion.php plugins/generic/logViewer/version.xml
 ```
 
-It clones the repository fresh, runs `composer install` because there is a `composer.json`, removes `.git`
-and everything listed in `exclusions.txt`, and builds `logViewer-vX.tar.gz` with its MD5 — which is what the
-plugin gallery entry needs. Paths in `exclusions.txt` are written with the `logViewer/` prefix, as the tool
-expects; it lists only this repository's own files, so `lib/vendor` in the package is exactly what
-`composer install` produced and can be compared against it. Installing that file through
-Administration › Plugins › Upload works on a host with no shell access, because nothing runs Composer at
-install time. Installing that file through Administration › Plugins › Upload works on a host
-with no shell access, because nothing runs Composer at install time.
+The dependencies are not in the repository; `composer install` puts them in the plugin's
+`lib/vendor`, where `composer.json` says.
 
-## Configuration
+Then enable it:
 
-Settings are available from the plugin's **Settings** action. Anything set in a `[logs]` section of
-`config.inc.php` overrides the matching setting and appears read-only in the form. The keys are those of
-3.6, so the same section keeps working after an upgrade:
+- **More than one journal, press or server:** Administration → Site Settings → Plugins.
+- **Exactly one:** that journal's Settings → Website → Plugins — core hides the site-level tab on
+  single-context installations. Only a site administrator can enable it or change its settings.
+
+## Settings
+
+The plugin's **Settings** action holds everything: where log entries go, how long daily files are
+kept, the format, whether failed requests are recorded, and which logs the page shows.
+
+A `[logs]` section in `config.inc.php` wins over the form, and those settings are then shown
+read-only. The keys are 3.6's, so the section keeps working after the upgrade:
 
 ```ini
 [logs]
@@ -83,14 +81,14 @@ log_stacks = daily
 ; Daily files to keep; 0 keeps them all
 log_daily_days = 30
 
-; Monolog formatter class for daily, single, stderr and syslog. Unset = readable lines.
+; Monolog formatter for the daily, single, stderr and syslog channels. Unset = readable lines.
 ; log_formatter = Monolog\Formatter\JsonFormatter
 
-; Report failures the caller caused, such as 404s. Plugin only: 3.6 always reports them.
+; Record failures the caller caused, such as 404s. Plugin only: 3.6 always records them.
 ; log_client_errors = Off
 
-; Log files to show in the viewer. Setting one here shows it, from this path, whatever the settings say.
-; A path may be a glob pattern. php_error_log falls back to PHP's error_log setting.
+; Logs the page shows. A key set here shows that log, from this path, whatever the settings say.
+; A path may be a glob pattern. php_error_log falls back to PHP's own error_log setting.
 ; php_error_log = /var/log/php/error.log
 ; apache_error_log = /var/log/apache2/error.log
 ; nginx_error_log = /var/log/nginx/error.log
@@ -100,83 +98,45 @@ log_daily_days = 30
 ; supervisor_log = /var/log/supervisor/supervisord.log
 ```
 
-## Choosing the logs the viewer shows
+## Logs shown on the page
 
-Under **Logs shown in the viewer** in the settings, each log has a **Show in the viewer** box. Logs that
-live outside the files directory also take a path, which may be a single file or a glob pattern such as
+Each log has a **Show in the viewer** box under **Logs shown in the viewer**. Logs outside the
+files directory also take a path, which may be one file or a glob pattern such as
 `/var/log/postgresql/*.log`.
 
-- **Paths are checked as you type** and again when saving, as the web server sees them. The check
-  reports whether the path was found (with file count and total size), is missing, is not a file, is
-  relative, or exists but cannot be read. A log that is switched on must resolve to at least one readable
-  file.
-- **Paths are suggested** when none is set: PHP's `error_log` setting, the database server's own answer
-  (`@@log_error` on MySQL/MariaDB, `pg_current_logfile()` on PostgreSQL), and the usual locations for the
-  web server and Supervisor. A suggestion is only used once the settings are saved. A database log can only
-  be read when the database server runs on the same machine.
-- **Each log is read with the parser for the kind of log it was configured as**, not guessed from its
-  first line. MySQL and MariaDB error logs use a parser included with this plugin, since the log-viewer
-  package has none.
-- The web server needs permission to read these files. System logs are often readable only by `root` or
-  the `adm` group.
+- **Paths are checked as they are typed**, and again when saved, as the web server sees them: found
+  (with file count and total size), missing, not a file, relative, or unreadable. A log that is
+  switched on must resolve to at least one readable file.
+- **Paths are suggested** when none is set, from PHP's `error_log` setting, the database server's
+  own answer, and the usual places for the web server and Supervisor. A suggestion takes effect
+  once the settings are saved. A database log can only be read when the database runs on the same
+  machine.
+- The web server needs permission to read these files. System logs are often readable only by
+  `root` or the `adm` group.
 
-Only site administrators can change these settings. On 3.5 a site administrator can already upload and
-run plugins, so letting them name a log file does not give them any access they do not already have.
+Naming a log file is a site administrator's own business: on 3.5 they can already upload and run
+plugins, so this gives them no access they did not have.
 
-## Failed requests
+## Notes
 
-A request for a page that does not exist, or one that was refused, failed because of the caller. 3.6
-reports every such failure at ERROR level with a full stack trace, which on a public site means a log
-mostly made of robots and mistyped addresses. The plugin leaves them out unless **Failed requests** is
-ticked, or `log_client_errors = On` is set. Errors in the application itself are always reported.
-
-## What PHP's own error log still holds
-
-Most of 3.5's diagnostic messages are written with PHP's `error_log()`, which no error handler can see,
-and 3.6 does not route them to the log channels either. They stay in PHP's error log — which the viewer
-shows as a log source, on by default, so they are still one click away.
-
-## The viewer
-
-- Site administrators only. Logged-out visitors are sent to the login page, and other users get 403.
-- Deleting, and other state-changing actions, require the page's CSRF token.
-- Only the application logs (`{files_dir}/logs`) and the scheduled task logs can be **deleted**. Every other
-  log can be viewed and downloaded but not deleted: usage statistics logs are events the statistics task has
-  not counted yet, and external logs (PHP, web server, database, Supervisor) belong to the server.
-- When mail is sent to the log (`[general] sandbox = On` or `[email] default = log`), the viewer previews each
-  email. The HTML part is cleaned with `[security] allowed_html` first, so scripts and event handlers in an
-  email never run in the viewer.
-- Download links are signed and expire. They work with or without `restful_urls`. Single files download;
-  downloading a whole folder is refused, because the package builds that ZIP at a predictable path in the
-  system temporary directory and never removes it.
-- The viewer's pages and API responses tell the browser not to store them, so log contents stay out of the
-  browser cache.
-- The viewer inlines its CSS and JavaScript, so nothing is published to `public/`.
-- Large files are indexed in 50 MB steps the first time they are opened, so a file of several hundred
-  megabytes takes a minute or two before every entry is searchable. The viewer shows the progress.
-
-## Updating the log-viewer package
-
-The package's configuration is set in full in `classes/viewer/LogViewerServiceProvider.php`, not merged
-from its defaults. When updating `opcodesio/log-viewer` (`composer update` in this directory), check that
-every config key the new version reads is still set there. The `replace` of `illuminate/contracts` in
-`composer.json` keeps Composer from installing a second copy of Laravel's contracts next to the
-application's.
-
-Two more things to re-check after an update, both in the package's built `public/app.js`:
-
-- the browser storage key `selectedFileTypes` and its JSON array format, which `resources/views/layout.php`
-  adds newly appearing log types to;
-- whether the email preview frame has gained a `sandbox` attribute, which would make the plugin's own
-  Laravel parser redundant.
-
-## Known limitations
-
-- Errors raised before plugins load (container start-up, configuration loading) cannot be reported.
-- The viewer remembers which log types were selected. A type appearing later is ticked once, so it shows
-  up, but a type unticked on purpose stays unticked.
+- **Failed requests** — a request for a page that does not exist, or one that was refused, failed
+  because of the caller. On a public site most of those are robots and mistyped addresses, so they
+  are left out unless **Failed requests** is ticked. Errors in the application itself are always
+  recorded.
+- **PHP's error log still matters.** Most of 3.5's own diagnostic messages are written with
+  `error_log()`, which no error handler can see, and 3.6 does not route them either. They stay
+  there — which is why that log is shown on the page by default.
+- **Errors raised before plugins load** — container start-up, configuration loading — cannot be
+  reported.
+- **Large files** are indexed in 50 MB steps the first time they are opened, so a file of several
+  hundred megabytes takes a minute or two before every entry is searchable. The page shows the
+  progress.
+- **The page remembers which kinds of log were ticked.** A kind that appears later is ticked once,
+  so it shows up, but one unticked on purpose stays unticked.
 
 ## License
 
-GNU GPL v3. See [LICENSE](LICENSE). Parts of the plugin are adapted from pkp-lib, which is distributed
-under the same license.
+Copyright (c) 2026 Touhidur Rahman
+
+Distributed under the GNU GPL v3. For full terms see the file `LICENSE`. Parts of the plugin are
+adapted from pkp-lib, which is distributed under the same license.

@@ -13,7 +13,8 @@
  * Adapted from PKP\core\PKPLogViewerServiceProvider on 3.6 (pkp/pkp-lib#12237). It is registered
  * only for requests to the viewer, so the rest of the application never loads the package.
  * Differences from the parent provider:
- * - register() skips mergeConfigFrom(); the whole config is set explicitly in configureLogViewer()
+ * - register() skips mergeConfigFrom(); the whole config is set explicitly in configureLogViewer(),
+ *   so after updating the package check that every key its new version reads is set there
  * - the vendor's views, asset publishing, HTTP kernel middleware and Octane hooks are not used
  * - routes are registered on the router directly, then the URL generator is synced with them
  * - gates allow deletion of the application and scheduled task logs only, and refuse folder downloads
