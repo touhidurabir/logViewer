@@ -13,7 +13,9 @@
  * When mail is sent to the log ([general] sandbox, or [email] default = log), the vendor parser
  * extracts each email and the viewer renders its HTML part in an iframe without a sandbox
  * attribute, so any script in that HTML would run in the site's origin with the administrator's
- * session. The HTML part is therefore passed through the site's HTML purifier first.
+ * session. The HTML part is therefore passed through the site's HTML purifier first. If a later
+ * version of the package sandboxes that frame — check `public/app.js` after an update — this class
+ * is no longer needed.
  *
  * Adapted from PKP\logParser\PKPLaravelLog on 3.6 (pkp/pkp-lib#12237).
  */

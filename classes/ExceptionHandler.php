@@ -12,10 +12,15 @@
  *        log channel instead of PHP's error_log, and renders a real response, never an empty HTTP 200,
  *        for exceptions raised by Laravel routes outside the API.
  *
- * Adapted from PKP\core\PKPExceptionHandler on 3.6 (pkp/pkp-lib#12841, pkp/pkp-lib#12237), with one
- * difference: failures the caller caused (a 404 for a mistyped or probed URL, a refused action) are
- * only reported when the settings ask for them. 3.6 reports every throwable at ERROR with its stack
- * trace, which on a public site fills the log with bot traffic.
+ * Adapted from PKP\core\PKPExceptionHandler on 3.6 (pkp/pkp-lib#12841, pkp/pkp-lib#12237), with
+ * three differences:
+ * - failures the caller caused (a 404 for a mistyped or probed URL, a refused action) are only
+ *   reported when the settings ask for them. 3.6 reports every throwable at ERROR with its stack
+ *   trace, which on a public site fills the log with bot traffic.
+ * - every entry carries the request behind it, so an administrator can tell what was being asked
+ *   for, in which journal, by whom (see RequestContext).
+ * - an exception with no message of its own is recorded by its status or its class, not as a blank
+ *   line (see message()).
  */
 
 namespace APP\plugins\generic\logViewer\classes;
@@ -67,14 +72,39 @@ class ExceptionHandler implements ExceptionHandlerContract
             return;
         }
 
+        $context = [];
+
         try {
-            Log::error($exception->getMessage(), ['exception' => $exception]);
+            $context = RequestContext::describe();
+            Log::error(static::message($exception), $context + ['exception' => $exception]);
         } catch (Throwable $loggingException) {
             // Laravel logging itself failed (unwritable log file, broken channel): keep the report
             // where 3.5 always put it.
-            error_log($exception->__toString());
+            error_log(($context ? json_encode($context) . ' ' : '') . $exception->__toString());
             error_log('Logging failed: ' . $loggingException->__toString());
         }
+    }
+
+    /**
+     * What the entry says went wrong.
+     *
+     * 3.6 logs the exception's own message, which for the ones raised by the router — a 404, a
+     * refused action — is empty, leaving an ERROR line that names nothing at all. The status takes
+     * its place, and stands in front of a message that has one, since "Not found" and "Forbidden"
+     * are worth seeing without opening the entry.
+     */
+    protected static function message(Throwable $exception): string
+    {
+        $message = trim($exception->getMessage());
+
+        if ($exception instanceof HttpExceptionInterface) {
+            $statusCode = $exception->getStatusCode();
+            $status = sprintf('HTTP %d %s', $statusCode, Response::$statusTexts[$statusCode] ?? 'Error');
+
+            return $message === '' ? $status : "{$status}: {$message}";
+        }
+
+        return $message === '' ? $exception::class : $message;
     }
 
     /**

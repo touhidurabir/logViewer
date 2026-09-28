@@ -44,6 +44,8 @@ $fileTypes = app()->get(LogSources::class)->shownTypes();
     // it is empty, so a kind of log that appears later - the application log after the first error, or
     // one just switched on in the settings - would stay hidden with no sign of it. Tick a type this
     // browser has not seen before, and leave alone any the administrator unticked on purpose.
+    // The storage key and its JSON format belong to the package: re-check them in its public/app.js
+    // after an update.
     (function (types) {
         var selectedKey = 'selectedFileTypes';
         var seenKey = 'logViewer.seenFileTypes';

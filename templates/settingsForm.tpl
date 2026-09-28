@@ -27,6 +27,39 @@
 				{rdelim});
 			{rdelim}, 400);
 		{rdelim});
+
+		// Show a setting only while the selected destination uses it: the destination list belongs to
+		// the stack channel, the number of files to the daily channel, and the format to the channels
+		// that write through Monolog. Hidden fields keep their values, so switching back restores them.
+		var formatterChannels = ['daily', 'single', 'stderr', 'syslog'];
+
+		function selectedChannels() {ldelim}
+			var channel = $form.find('[name="logChannel"]').val(),
+				stacks;
+
+			if (channel !== 'stack') {ldelim}
+				return [channel];
+			{rdelim}
+
+			stacks = $form.find('[name="logStacks[]"]:checked').map(function() {ldelim}
+				return this.value;
+			{rdelim}).get();
+
+			return stacks.length ? stacks : ['daily'];
+		{rdelim}
+
+		function showApplicableSettings() {ldelim}
+			var channels = selectedChannels();
+
+			$form.find('#logViewerStacksSection').toggle($form.find('[name="logChannel"]').val() === 'stack');
+			$form.find('#logViewerDailyDaysSection').toggle($.inArray('daily', channels) !== -1);
+			$form.find('#logViewerFormatterSection').toggle($.grep(channels, function(channel) {ldelim}
+				return $.inArray(channel, formatterChannels) !== -1;
+			{rdelim}).length > 0);
+		{rdelim}
+
+		$form.on('change', '[name="logChannel"], [name="logStacks[]"]', showApplicableSettings);
+		showApplicableSettings();
 	{rdelim});
 </script>
 <style>
@@ -53,17 +86,17 @@
 			{if $overridden.logChannel}<p class="description">{translate key="plugins.generic.logViewer.settings.overridden" key_name="log_channel"}</p>{/if}
 		{/fbvFormSection}
 
-		{fbvFormSection title="plugins.generic.logViewer.settings.logStacks" description="plugins.generic.logViewer.settings.logStacks.description" for="logStacks[]" list="true"}
+		{fbvFormSection id="logViewerStacksSection" title="plugins.generic.logViewer.settings.logStacks" description="plugins.generic.logViewer.settings.logStacks.description" for="logStacks[]" list="true"}
 			{fbvElement type="checkboxgroup" id="logStacks" from=$stackOptions selected=$logStacks translate=false disabled=$overridden.logStacks}
 			{if $overridden.logStacks}<p class="description">{translate key="plugins.generic.logViewer.settings.overridden" key_name="log_stacks"}</p>{/if}
 		{/fbvFormSection}
 
-		{fbvFormSection title="plugins.generic.logViewer.settings.logDailyDays" description="plugins.generic.logViewer.settings.logDailyDays.description"}
+		{fbvFormSection id="logViewerDailyDaysSection" title="plugins.generic.logViewer.settings.logDailyDays" description="plugins.generic.logViewer.settings.logDailyDays.description"}
 			{fbvElement type="text" id="logDailyDays" value=$logDailyDays disabled=$overridden.logDailyDays size=$fbvStyles.size.SMALL}
 			{if $overridden.logDailyDays}<p class="description">{translate key="plugins.generic.logViewer.settings.overridden" key_name="log_daily_days"}</p>{/if}
 		{/fbvFormSection}
 
-		{fbvFormSection title="plugins.generic.logViewer.settings.logFormatter" description="plugins.generic.logViewer.settings.logFormatter.description"}
+		{fbvFormSection id="logViewerFormatterSection" title="plugins.generic.logViewer.settings.logFormatter" description="plugins.generic.logViewer.settings.logFormatter.description"}
 			{fbvElement type="select" id="logFormatter" from=$formatterOptions selected=$logFormatter translate=false disabled=$overridden.logFormatter size=$fbvStyles.size.MEDIUM}
 			{if $overridden.logFormatter}<p class="description">{translate key="plugins.generic.logViewer.settings.overridden" key_name="log_formatter"}</p>{/if}
 		{/fbvFormSection}
