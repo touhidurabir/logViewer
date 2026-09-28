@@ -11,6 +11,11 @@ channels, reports errors into them, and adds a page that reads them back.
 - **Errors are recorded** — uncaught errors, failed queue jobs and API exceptions, in
   `{files_dir}/logs/app-YYYY-MM-DD.log` by default. The destination is a setting: daily files, a
   single file, PHP's error log, syslog, stderr, several of these at once, or nothing.
+- **Each entry says what was being asked for** — the method and path of the request, the journal it
+  was addressed to, and the user, where one was already known. A failure that carries no message of
+  its own, such as a 404, is recorded by its status rather than as a blank line. Query strings are
+  left out, since access keys and password reset links travel in them, and so is the caller's IP
+  address.
 - **A log page** at Administration → Logs, where logs can be read, searched, filtered by level,
   downloaded and deleted.
 - **Other logs too** — PHP's error log, scheduled task logs, usage statistics logs, the Apache or
